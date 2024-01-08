@@ -33,7 +33,7 @@ function Get-RemoteRecycleBin {
 
     $InformationPreference = "Continue"    
 
-    #region first scriptblock for running remotely - get all users and associated recycle bins
+    # Region first scriptblock for running remotely - get all users and associated recycle bins
     $GetAllUsersAndBins = {
         function Get-DriveInfo {      
             param ($ComputerName = $env:COMPUTERNAME)
@@ -63,9 +63,9 @@ function Get-RemoteRecycleBin {
     
         Get-UsersAndBins    
     }
-    #endregion first scriptblock for running remotely - get all users and associated recycle bins
+    # Endregion first scriptblock for running remotely - get all users and associated recycle bins
     
-    #region second scriptblock for running remotely - parse all the recycle bins
+    # Region second scriptblock for running remotely - parse all the recycle bins
     $GetParsedRecycleBinContents = {
         function Get-RecycleBinContentsList {
             param (
@@ -92,7 +92,6 @@ function Get-RemoteRecycleBin {
                     "02-00-00-00-00-00-00-00" { $os = 'Win10'; $originalPathRaw = (Get-Content -Encoding Byte -path $file)[28 .. (Get-Item $file).Length] }
                 }
                 $originalPath = [System.Text.Encoding]::Ascii.GetString($originalPathRaw) -replace "\x00"
-            
                 $deletedTimeRaw = (Get-Content -Encoding Byte -path $file)[16 .. 23]
                 $deletedTimeRawAsInt = [System.BitConverter]::ToInt64($deletedTimeRaw,0)
                 $deletedTimeUtc = [DateTime]::FromFileTime($deletedTimeRawAsInt).ToUniversalTime()
@@ -191,8 +190,7 @@ function Get-RemoteRecycleBin {
         }
         Get-RecycleBinContentsList -binPaths $args
     }
-    #endregion second scriptblock for running remotely - parse all the recycle bins
-    
+    # Endregion second scriptblock for running remotely - parse all the recycle bins
     
     # get a list of all the user profiles on the remote system and associated recycle bin locations
     $UsersAndBins = Invoke-Command -ComputerName $computername -ScriptBlock $GetAllUsersAndBins
@@ -201,7 +199,7 @@ function Get-RemoteRecycleBin {
         $UsersAndBins | Select-Object Username, @{n="Recycle Bin Exists";e={$_.BinPathExists}}, @{n="Recycle Bin Paths";e={if ($_.BinPathExists) {$_.BinPaths} else {$null}}} | Format-Table -AutoSize
     }
 
-    # if a username is specified
+    # If a username is specified
     if (-not ([string]::IsNullOrEmpty($username))) {
         # check if user specified exists in the returned data
         if (-not($username -in $UsersAndBins.username)) {
@@ -212,10 +210,9 @@ function Get-RemoteRecycleBin {
             $argumentList = (,($UsersAndBins | Where-Object {$_.username -eq $username}).BinPaths)
             Write-Host $argumentList
             $Results = Invoke-Command -ComputerName $computername -ScriptBlock $GetParsedRecycleBinContents -ArgumentList $argumentList
-            
         }
     }
-    # else query for all users
+    # Else query for all users
     else {
         Write-Information -MessageData "`nRecycle Bin Contents for all users on for host $computername."
         $argumentList = (,$UsersAndBins.BinPaths)
