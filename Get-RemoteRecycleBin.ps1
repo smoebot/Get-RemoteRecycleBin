@@ -4,13 +4,13 @@ function Get-RemoteRecycleBin {
         Connects to a remote machine and pulls back the $Recyle.Bin contents
     .DESCRIPTION
         Parses a remote recycle bin to retrieve the files, and meta data regarding where they originally resided and the time they were deleted.
-        Can traget the recycle bin locations on all connected drives.
+        Can target the recycle bin locations on all connected drives.
         This script needs to be run with administrative rights on the remote host, no verification is done to confirm this.
     .PARAMETER username
         The SamAccountName of the users recycle bin that you are trying to retrieve. This is optional, if not 
         specified the script will return for all users of the remote system.
     .PARAMETER computername
-        The host name of the computer that holds the recycele bin that you are trying to retrieve. This is optional, if not
+        The host name of the computer that holds the recycle bin that you are trying to retrieve. This is optional, if not
         specified it will return the results from the local computer.
     .PARAMETER showDetails
         Shows details of all the user accounts on the host being queried and the locations of each recycle bin for each user on that host.
